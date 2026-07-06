@@ -73,23 +73,38 @@ async def start():
 @cl.on_message
 async def main(message: cl.Message):
 
-    history = cl.user_session.get("history")
+    # Immediately show a "Thinking..." status so the user sees feedback
+    # while the model is warming up and before the first token arrives.
+    async with cl.Step(name="Thinking", type="llm") as step:
+        step.output = "Thinking…"
+        await step.update()
 
-    history.append(HumanMessage(content=message.content))
+        history = cl.user_session.get("history")
+        history.append(HumanMessage(content=message.content))
+        messages = [SystemMessage(content=SYSTEM_PROMPT)] + history
 
-    messages = [SystemMessage(content=SYSTEM_PROMPT)] + history
+        # Create the streaming message up front so it can receive tokens
+        # the instant the first one arrives from the model.
+        msg = cl.Message(content="")
+        full_response = ""
+        first_token_seen = False
 
-    # Stream the response token-by-token to the UI
-    msg = cl.Message(content="")
-    full_response = ""
+        async for chunk in llm.astream(messages):
+            token = chunk.content
+            if not token:
+                continue
 
-    async for chunk in llm.astream(messages):
-        token = chunk.content
-        if token:
             full_response += token
             await msg.stream_token(token)
 
-    await msg.send()
+            # Once the first chunk is in flight, clear the thinking
+            # placeholder so the streamed answer takes over the view.
+            if not first_token_seen:
+                first_token_seen = True
+                step.output = ""
+                await step.update()
 
-    history.append(AIMessage(content=full_response))
-    cl.user_session.set("history", history)
+        await msg.send()
+
+        history.append(AIMessage(content=full_response))
+        cl.user_session.set("history", history)
