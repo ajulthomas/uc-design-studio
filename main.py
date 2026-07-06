@@ -78,9 +78,18 @@ async def main(message: cl.Message):
     history.append(HumanMessage(content=message.content))
 
     messages = [SystemMessage(content=SYSTEM_PROMPT)] + history
-    response = await llm.ainvoke(messages)
-    history.append(AIMessage(content=response.content))
 
+    # Stream the response token-by-token to the UI
+    msg = cl.Message(content="")
+    full_response = ""
+
+    async for chunk in llm.astream(messages):
+        token = chunk.content
+        if token:
+            full_response += token
+            await msg.stream_token(token)
+
+    await msg.send()
+
+    history.append(AIMessage(content=full_response))
     cl.user_session.set("history", history)
-
-    await cl.Message(content=response.content).send()
