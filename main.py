@@ -26,13 +26,13 @@ NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
 
 # llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.7)
 
-llm = ChatNVIDIA(
-    model="meta/llama-3.3-70b-instruct",
-    api_key=NVIDIA_API_KEY,
-    temperature=0.2,
-    top_p=0.7,
-    max_tokens=1024
-)
+# llm = ChatNVIDIA(
+#     model="meta/llama-3.3-70b-instruct",
+#     api_key=NVIDIA_API_KEY,
+#     temperature=0.2,
+#     top_p=0.7,
+#     max_tokens=1024
+# )
 
 # llm = ChatNVIDIA(
 #     model="openai/gpt-oss-120b",
@@ -41,6 +41,14 @@ llm = ChatNVIDIA(
 #     top_p=1,
 #     max_tokens=4096,
 # )
+
+llm = ChatNVIDIA(
+  model="minimaxai/minimax-m3",
+  api_key=NVIDIA_API_KEY,
+  temperature=1,
+  top_p=0.95,
+  max_completion_tokens=8192,
+)
 
 SYSTEM_PROMPT = load_system_prompt()
 
