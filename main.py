@@ -26,7 +26,7 @@ NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
 
 # Default model used when the list cannot be fetched or the user's
 # selection is no longer available.
-DEFAULT_MODEL = "minimaxai/minimax-m3"
+DEFAULT_MODEL = "meta/llama-3.3-70b-instruct" # "minimaxai/minimax-m3"
 
 # Shared kwargs for the ChatNVIDIA client so every model instance is
 # constructed consistently.
