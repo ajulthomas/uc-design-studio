@@ -26,15 +26,15 @@ NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
 
 # Default model used when the list cannot be fetched or the user's
 # selection is no longer available.
-DEFAULT_MODEL = "meta/llama-3.3-70b-instruct" # "minimaxai/minimax-m3"
+DEFAULT_MODEL = "openai/gpt-oss-20b" # meta/llama-3.3-70b-instruct" # "minimaxai/minimax-m3"
 
 # Shared kwargs for the ChatNVIDIA client so every model instance is
 # constructed consistently.
 LLM_KWARGS = {
     "api_key": NVIDIA_API_KEY,
     "temperature": 1,
-    "top_p": 0.95,
-    "max_completion_tokens": 8192,
+    "top_p": 1,
+    "max_completion_tokens": 4096,
 }
 
 # Shared default settings widget id so we can refresh it later.
